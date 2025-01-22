@@ -31,15 +31,21 @@ jobs:
             curl -X GET http://127.0.0.1/users || (echo "Le conteneur Docker n'a pas répondu comme prévu" && exit 1)  # Test the container
 
       - run:
-          name: Connexion à Docker Hub
-          command: |
-            echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_LOGIN --password-stdin
-
-      - run:
           name: Nettoyer le conteneur Docker
           command: |
             sudo docker stop my-app-container  # Stop the container
             sudo docker rm my-app-container  # Remove the container
+
+      - run:
+          name: Connexion à Docker Hub
+          command: |
+            echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_LOGIN --password-stdin
+
+        - run:
+          name: Pousser l'image Docker vers DockerHub
+          command: |
+            sudo docker tag my-app $DOCKERHUB_USERNAME/my-app:latest  # Tag the image with your DockerHub username
+            sudo docker push $DOCKERHUB_USERNAME/my-app:latest  # Push the image to DockerHub
 
 workflows:
   version: 2
