@@ -3,7 +3,7 @@ version: 2.1
 executors:
   machine-executor:
     machine:
-      image: ubuntu-2004:202010-01  # Use a valid machine image
+      image: ubuntu-2004:2023.01  # A valid CircleCI image
 
 jobs:
   build:
