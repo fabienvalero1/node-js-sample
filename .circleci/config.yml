@@ -1,54 +1,26 @@
 version: 2.1
 
+# Import the Docker Orb
+orbs:
+  docker: circleci/docker@3.0.0  # Use the latest stable version
+
 jobs:
-  build-and-run-docker:
-    # Utilisation de l'exécuteur "machine" avec une image Ubuntu 22.04
-    machine:
-      image: ubuntu-2204:current
-
+  build-and-push:
+    docker:
+      - image: circleci/python:3.8  # This is the base image used for the job
     steps:
-      - checkout
-
-      - run:
-          name: Construire l'image Docker
-          command: |
-            sudo docker build -t my-app .
-
-      - run:
-          name: Vérifier l'image Docker
-          command: |
-            sudo docker images | grep my-app
-
-      - run:
-          name: Exécuter le conteneur Docker
-          command: |
-            sudo docker run -d -p 80:8080 --name my-app-container my-app
-
-      - run:
-          name: Tester le conteneur Docker
-          command: |
-            sleep 5  # Attendre que le conteneur soit prêt
-            curl -X GET http://127.0.0.1/users || (echo "Le conteneur Docker n'a pas répondu comme prévu" && exit 1)
-
-      - run:
-          name: Nettoyer le conteneur Docker
-          command: |
-            sudo docker stop my-app-container
-            sudo docker rm my-app-container
-
-      - run:
-          name: Connexion à Docker Hub
-          command: |
-            echo $DOCKERHUB_PASSWORD | sudo docker login -u $DOCKERHUB_USERNAME --password-stdin
-
-      - run:
-          name: Pousser l'image Docker vers DockerHub
-          command: |
-            sudo docker tag my-app $DOCKERHUB_USERNAME/my-app:latest
-            sudo docker push $DOCKERHUB_USERNAME/my-app:latest
+      - checkout  # Checkout your code
+      - docker/login:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD  # Use environment variables for DockerHub credentials
+      - docker/build:
+          image: my-app  # Name of your Docker image
+          tag: latest  # Tag your image as "latest"
+      - docker/push:
+          image: $DOCKERHUB_USERNAME/my-app  # Push the image to Docker Hub under your username
 
 workflows:
   version: 2
-  build-and-run:
+  build-and-push:
     jobs:
-      - build-and-run-docker
+      - build-and-push
