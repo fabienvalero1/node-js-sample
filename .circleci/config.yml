@@ -2,7 +2,7 @@ version: 2.1
 
 # Import the Docker Orb
 orbs:
-  docker: circleci/docker@3.0.0  # Use the latest stable version
+  docker: circleci/docker@2.1.0  # Use the latest stable version
 
 jobs:
   build-and-push:
