@@ -3,7 +3,7 @@ version: 2.1
 executors:
   machine-executor:
     machine:
-      image: circleci/classic:edge
+      image: circleci/classic:latest
 
 jobs:
   build:
