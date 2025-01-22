@@ -1,28 +1,16 @@
 version: 2.1
 
 executors:
-  machine-executor:
-    machine:
-      image: ubuntu-2004:current
+  docker-executor:
+    docker:
+      - image: cimg/base:stable  # Use a stable CircleCI base image
 
 jobs:
   build:
-    executor: machine-executor
+    executor: docker-executor
     steps:
       - checkout
-      - run:
-          name: Install Docker Dependencies
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-            sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-            sudo apt-get update
-      - run:
-          name: Install Docker
-          command: |
-            sudo apt-get install -y containerd.io
-            sudo apt-get install -y docker-ce docker-ce-cli
+      - setup_remote_docker  # Remove the version specification
       - run:
           name: Build Docker Image
           command: |
@@ -31,7 +19,7 @@ jobs:
           name: Test Docker Image
           command: |
             docker run -d -p 8080:3000 --name test-container my-app:latest
-            sleep 30
+            sleep 10  # Wait for the container to start
             curl --retry 5 --retry-delay 5 --retry-connrefused -f http://127.0.0.1:8080 || exit 1
             docker stop test-container
             docker rm test-container
