@@ -39,13 +39,13 @@ jobs:
       - run:
           name: Docker Login to DockerHub
           command: |
-            echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin  # Login to DockerHub
+            echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_LOGIN --password-stdin  # Login to DockerHub
 
       - run:
           name: Pousser l'image Docker vers DockerHub
           command: |
-            sudo docker tag my-app $DOCKERHUB_USERNAME/my-app:latest  # Tag the image with your DockerHub username
-            sudo docker push $DOCKERHUB_USERNAME/my-app:latest  # Push the image to DockerHub
+            sudo docker tag my-app $DOCKERHUB_LOGIN/my-app:latest  # Tag the image with your DockerHub username
+            sudo docker push $DOCKERHUB_LOGIN/my-app:latest  # Push the image to DockerHub
 
 workflows:
   version: 2
