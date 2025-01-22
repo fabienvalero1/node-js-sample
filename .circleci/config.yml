@@ -3,7 +3,7 @@ version: 2.1
 executors:
   docker-executor:
     docker:
-      - image: circleci/base:stable
+      - image: cimg/base:2024.01
 
 jobs:
   build:
