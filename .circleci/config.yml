@@ -1,0 +1,32 @@
+version: 2.1
+
+executors:
+  docker-executor:
+    docker:
+      - image: cimg/base:stable  # Use a stable CircleCI base image
+
+jobs:
+  build:
+    executor: docker-executor
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.7
+      - run:
+          name: Build Docker Image
+          command: |
+            docker build -t my-app:latest .
+      - run:
+          name: Test Docker Image
+          command: |
+            docker run -d -p 8080:3000 --name test-container my-app:latest
+            sleep 10  # Wait for the container to start
+            curl --retry 5 --retry-delay 5 --retry-connrefused -f http://localhost:8080 || exit 1
+            docker stop test-container
+            docker rm test-container
+
+workflows:
+  version: 2
+  build-and-push:
+    jobs:
+      - build
