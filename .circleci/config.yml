@@ -2,22 +2,23 @@ version: 2.1
 
 # Import the Docker Orb
 orbs:
-  docker: circleci/docker@2.1.0  # Use the latest stable version
+  docker: circleci/docker@2.1.0  # Use the correct version of the Docker orb
 
 jobs:
   build-and-push:
     docker:
-      - image: circleci/python:3.8  # This is the base image used for the job
+      - image: circleci/python:3.8  # Base image to run the job (you can change this if necessary)
     steps:
       - checkout  # Checkout your code
-      - docker/login:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD  # Use environment variables for DockerHub credentials
+      - run:
+          name: Docker login
+          command: |
+            echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin  # Docker login
       - docker/build:
-          image: my-app  # Name of your Docker image
-          tag: latest  # Tag your image as "latest"
+          image: my-app  # Name of the Docker image
+          tag: latest  # Tag for the image
       - docker/push:
-          image: $DOCKERHUB_USERNAME/my-app  # Push the image to Docker Hub under your username
+          image: $DOCKERHUB_USERNAME/my-app:latest  # Push the image to Docker Hub
 
 workflows:
   version: 2
