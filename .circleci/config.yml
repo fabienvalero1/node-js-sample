@@ -3,14 +3,19 @@ version: 2.1
 executors:
   machine-executor:
     machine:
-      image: ubuntu-2004:2023.01  # Valid machine image
-      resource_class: medium  # Specify a resource class
+      image: ubuntu-2004:202104-01  # Use a valid CircleCI machine image for Ubuntu
+      resource_class: medium  # Specify the resource class for the executor
 
 jobs:
   build:
     executor: machine-executor
     steps:
       - checkout
+      - run:
+          name: Install Docker
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y docker.io
       - run:
           name: Docker Login
           command: |
