@@ -1,16 +1,15 @@
 version: 2.1
 
 executors:
-  docker-executor:
+  machine-executor:
     docker:
-      - image: cimg/base:stable  # Use a stable CircleCI base image
+      - image: ubuntu-2004:202104-01
 
 jobs:
   build:
-    executor: docker-executor
+    executor: machine-executor
     steps:
       - checkout
-      - setup_remote_docker  # Remove the version specification
       - run:
           name: Build Docker Image
           command: |
