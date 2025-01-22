@@ -3,8 +3,7 @@ version: 2.1
 executors:
   machine-executor:
     machine:
-      image: ubuntu-2004:202104-01  # Use a valid CircleCI machine image for Ubuntu
-      resource_class: medium  # Specify the resource class for the executor
+      image: ubuntu-2004:202104-01
 
 jobs:
   build:
