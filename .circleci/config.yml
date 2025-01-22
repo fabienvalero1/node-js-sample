@@ -1,20 +1,17 @@
 version: 2.1
 
 executors:
-  machine-executor:
-    machine:
-      image: ubuntu-2004:2023.01  # A valid CircleCI image
+  docker-executor:
+    docker:
+      - image: circleci/node:18-browsers  # Replace with an appropriate image
 
 jobs:
   build:
-    executor: machine-executor
+    executor: docker-executor
     steps:
       - checkout
-      - run:
-          name: Install Docker
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y docker.io
+      - setup_remote_docker:
+          version: 20.10.7
       - run:
           name: Build Docker Image
           command: |
