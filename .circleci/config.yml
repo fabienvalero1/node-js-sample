@@ -44,8 +44,8 @@ jobs:
       - run:
           name: Pousser l'image Docker vers DockerHub
           command: |
-            sudo docker tag my-app $DOCKERHUB_USERNAME/my-app:latest
-            sudo docker push $DOCKERHUB_USERNAME/my-app:latest
+            sudo docker tag my-app $DOCKERHUB_LOGIN/my-app:latest
+            sudo docker push $DOCKERHUB_LOGIN/my-app:latest
 
 workflows:
   version: 2
