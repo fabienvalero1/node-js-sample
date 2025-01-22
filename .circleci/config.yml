@@ -1,39 +1,43 @@
 version: 2.1
 
-executors:
-  machine-executor:
-    machine:
-      image: ubuntu-2004:202104-01
-
 jobs:
-  build:
-    executor: machine-executor
+  build-and-run-docker:
+    # Utilisation de l'exécuteur "machine" avec une image Ubuntu 22.04
+    machine:
+      image: ubuntu-2204:current
+
     steps:
       - checkout
+
       - run:
-          name: Install Docker
+          name: Construire l'image Docker
           command: |
-            sudo apt-get update
-            sudo apt-get install -y docker.io
+            sudo docker build -t my-app .
+
       - run:
-          name: Docker Login
+          name: Vérifier l'image Docker
           command: |
-            echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
+            sudo docker images | grep my-app
+
       - run:
-          name: Build Docker Image
+          name: Exécuter le conteneur Docker
           command: |
-            docker build -t my-app:latest .
+            sudo docker run -d -p 80:8080 --name my-app-container my-app
+
       - run:
-          name: Test Docker Image
+          name: Tester le conteneur Docker
           command: |
-            docker run -d -p 8080:8080 --name test-container my-app:latest
-            sleep 10  # Wait for the container to start
-            curl --retry 5 --retry-delay 5 --retry-connrefused -f http://127.0.0.1:8080 || exit 1
-            docker stop test-container
-            docker rm test-container
+            sleep 20  # Attendre que le conteneur soit prêt
+            curl -X GET http://127.0.0.1/users || (echo "Le conteneur Docker n'a pas répondu comme prévu" && exit 1)
+
+      - run:
+          name: Nettoyer le conteneur Docker
+          command: |
+            sudo docker stop my-app-container
+            sudo docker rm my-app-container
 
 workflows:
   version: 2
-  build-and-push:
+  build-and-run:
     jobs:
-      - build
+      - build-and-run-docker
